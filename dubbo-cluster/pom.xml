@@ -41,6 +41,11 @@
             <version>${curator_version}</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-recipes</artifactId>
+            <version>${curator_version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.bsf</groupId>
             <artifactId>bsf-api</artifactId>
             <scope>provided</scope>
