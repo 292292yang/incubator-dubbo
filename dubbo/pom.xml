@@ -23,6 +23,8 @@
         <version>2.5.10</version>
     </parent>
     <artifactId>dubbo</artifactId>
+    <!--自定义版本-->
+    <version>2.5.10</version>
     <packaging>jar</packaging>
     <name>${project.artifactId}</name>
     <description>The all in one project of dubbo</description>

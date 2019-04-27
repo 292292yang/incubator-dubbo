@@ -28,6 +28,7 @@ import com.alibaba.dubbo.rpc.cluster.Directory;
 import com.alibaba.dubbo.rpc.cluster.Router;
 import com.alibaba.dubbo.rpc.cluster.RouterFactory;
 import com.alibaba.dubbo.rpc.cluster.router.MockInvokersSelector;
+import com.alibaba.dubbo.rpc.cluster.router.custom.CustomRouter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,7 +36,6 @@ import java.util.List;
 
 /**
  * Abstract implementation of Directory: Invoker list returned from this Directory's list method have been filtered by Routers
- *
  */
 public abstract class AbstractDirectory<T> implements Directory<T> {
 
@@ -105,6 +105,8 @@ public abstract class AbstractDirectory<T> implements Directory<T> {
         }
         // append mock invoker selector
         routers.add(new MockInvokersSelector());
+        // TODO: 2019/4/26 添加自定义路由
+        routers.add(new CustomRouter(url));
         Collections.sort(routers);
         this.routers = routers;
     }
