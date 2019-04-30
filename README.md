@@ -18,3 +18,17 @@ We are now collecting dubbo user info in order to help us to improve dubbo bette
 * [Dubbo user manual](http://dubbo.io/books/dubbo-user-book/)
 * [Dubbo developer guide](http://dubbo.io/books/dubbo-dev-book/)
 * [Dubbo admin manual](http://dubbo.io/books/dubbo-admin-book/)
+
+## 本地jar上传到仓库命令
+
+* 上传到本地仓库
+  ```
+   mvn install:install-file -DgroupId=com.lagou.plat.bi.mysql-connector-java-bin -DartifactId=mysql-connector-java-bin -Dversion=0.0.1 -Dpackaging=jar -Dfile=D:\workspace\test\lagouBI\mysql-connector-java-bin.jar
+  ```
+* 上传到远端仓库
+  ```
+   mvn deploy:deploy-file -DgroupId=com.lagou.plat.bi.mysql-connector-java-bin -DartifactId=mysql-connector-java-bin -Dversion=0.0.1 -Dpackaging=jar -Dfile=D:\workspace\test\lagouBI\mysql-connector-java-bin.jar -Durl=http://nexus.lagou.com/content/repositories/releases -DrepositoryId=releases
+  ```
+  
+
+

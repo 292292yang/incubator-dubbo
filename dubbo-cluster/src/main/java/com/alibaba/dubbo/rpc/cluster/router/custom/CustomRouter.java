@@ -11,11 +11,10 @@ import com.alibaba.dubbo.rpc.cluster.Router;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.NodeCache;
 import org.apache.curator.framework.recipes.cache.NodeCacheListener;
-import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.curator.retry.RetryForever;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +29,9 @@ import java.util.List;
 public class CustomRouter implements Router {
 
     private static final Logger logger = LoggerFactory.getLogger(CustomRouter.class);
-    private static RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
+    //    private static RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
+    //一直重试,重试间隔时间为3秒
+    private static RetryPolicy retryPolicy = new RetryForever(3000);
     private static final String PATH = "/dubbo-custom-router/blacklist";
     private static CuratorFramework client;
     private List<String> limitIpList = new ArrayList<String>();
@@ -59,7 +60,7 @@ public class CustomRouter implements Router {
                         logger.info("###" + PATH + "节点数据:" + limitIpStr);
                         if (StringUtils.isNotEmpty(limitIpStr)) {
                             limitIpList = Arrays.asList(limitIpStr.split(","));
-                        }else {
+                        } else {
                             limitIpList = new ArrayList<String>();
                         }
                     } else {
