@@ -41,6 +41,7 @@ public class CustomRouter implements Router {
     public CustomRouter(URL url) {
         this.url = url;
         try {
+            logger.info("###开始创建zk连接###");
             String connectString = url.getBackupAddress();
             client = CuratorFrameworkFactory.builder()
                     .connectString(connectString)
@@ -49,6 +50,7 @@ public class CustomRouter implements Router {
                     .retryPolicy(retryPolicy)
                     .build();
             client.start();
+            logger.info("###zkclient已启动###");
             final NodeCache cache = new NodeCache(client, PATH);
             NodeCacheListener listener = new NodeCacheListener() {
                 @Override
