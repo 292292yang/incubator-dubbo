@@ -31,6 +31,7 @@ import com.alibaba.dubbo.rpc.cluster.Directory;
 import com.alibaba.dubbo.rpc.cluster.Router;
 import com.alibaba.dubbo.rpc.cluster.RouterFactory;
 import com.alibaba.dubbo.rpc.cluster.router.MockInvokersSelector;
+import com.alibaba.dubbo.rpc.cluster.router.custom.CustomRouter;
 
 /**
  * 增加router的Directory
@@ -113,6 +114,10 @@ public abstract class AbstractDirectory<T> implements Directory<T> {
         }
         // append mock invoker selector
         routers.add(new MockInvokersSelector());
+        // TODO: 2019/4/26 添加自定义路由
+        System.out.println("###加入自定义路由###");
+        routers.add(new CustomRouter(url));
+        System.out.println("###加入自定义路由end###");
         Collections.sort(routers);
     	this.routers = routers;
     }
