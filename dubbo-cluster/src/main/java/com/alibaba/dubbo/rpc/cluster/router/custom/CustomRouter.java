@@ -11,13 +11,11 @@ import com.alibaba.dubbo.rpc.cluster.Router;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.NodeCache;
 import org.apache.curator.framework.recipes.cache.NodeCacheListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
-import org.apache.zookeeper.server.util.SerializeUtils;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,51 +34,54 @@ public class CustomRouter implements Router {
 //    private static RetryPolicy retryPolicy = new RetryForever(3000);
     private static final String PATH = "/dubbo-custom-router/blacklist";
     private static CuratorFramework client;
-    private List<String> limitIpList = new ArrayList<String>();
+    private static List<String> limitIpList = new ArrayList<String>();
     private final URL url;
 
     public CustomRouter(URL url) {
         this.url = url;
         try {
-            System.out.println("###开始创建zk连接###");
-            logger.info("###开始创建zk连接###");
-            String connectString = url.getBackupAddress();
-            client = CuratorFrameworkFactory.builder()
-                    .connectString(connectString)
-                    .sessionTimeoutMs(3000)
-                    .connectionTimeoutMs(5000)
-                    .retryPolicy(retryPolicy)
-                    .build();
-            client.start();
-            logger.info("###zkclient已启动###");
-            final NodeCache cache = new NodeCache(client, PATH);
-            NodeCacheListener listener = new NodeCacheListener() {
-                @Override
-                public void nodeChanged() {
-                    ChildData data = cache.getCurrentData();
-                    if (null != data) {
-                        String limitIpStr = null;
-                        Object obj = SerializationUtils.deserialize(cache.getCurrentData().getData());
-                        if (obj != null) {
-                            limitIpStr = obj.toString();
-                            //去除limitStr头尾空白
-                            limitIpStr = limitIpStr.trim();
-                        }
-                        logger.info("###" + PATH + "节点数据:" + limitIpStr);
-                        if (StringUtils.isNotEmpty(limitIpStr)) {
-                            limitIpList = Arrays.asList(limitIpStr.split(","));
+            if(client==null || client.getState()== CuratorFrameworkState.STOPPED){
+                System.out.println("###开始创建zk连接###");
+                logger.info("###开始创建zk连接###");
+                String connectString = url.getBackupAddress();
+                client = CuratorFrameworkFactory.builder()
+                        .connectString(connectString)
+                        .sessionTimeoutMs(3000)
+                        .connectionTimeoutMs(5000)
+                        .retryPolicy(retryPolicy)
+                        .build();
+                client.start();
+                logger.info("###zkclient已启动###");
+                final NodeCache cache = new NodeCache(client, PATH);
+                NodeCacheListener listener = new NodeCacheListener() {
+                    @Override
+                    public void nodeChanged() {
+                        ChildData data = cache.getCurrentData();
+                        if (null != data) {
+                            String limitIpStr = null;
+                            Object obj = SerializationUtils.deserialize(cache.getCurrentData().getData());
+                            if (obj != null) {
+                                limitIpStr = obj.toString();
+                                //去除limitStr头尾空白
+                                limitIpStr = limitIpStr.trim();
+                            }
+                            logger.info("###" + PATH + "节点数据:" + limitIpStr);
+                            if (StringUtils.isNotEmpty(limitIpStr)) {
+                                limitIpList = Arrays.asList(limitIpStr.split(","));
+                            } else {
+                                limitIpList = new ArrayList<String>();
+                            }
                         } else {
                             limitIpList = new ArrayList<String>();
+                            logger.info("###" + PATH + "节点数据为空###");
                         }
-                    } else {
-                        limitIpList = new ArrayList<String>();
-                        logger.info("###" + PATH + "节点数据为空###");
+                        logger.info("###limitIpList=" + limitIpList);
+                        System.out.println("###limitIpList=" + limitIpList);
                     }
-                    System.out.println("###limitIpList=" + limitIpList);
-                }
-            };
-            cache.getListenable().addListener(listener);
-            cache.start();
+                };
+                cache.getListenable().addListener(listener);
+                cache.start();
+            }
         } catch (Exception e) {
             logger.error("###自定义路由连接zk失败##失败原因:", e);
         }

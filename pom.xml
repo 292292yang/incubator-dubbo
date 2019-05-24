@@ -23,7 +23,7 @@
     <!--</parent>-->
     <groupId>com.alibaba</groupId>
     <artifactId>dubbo-parent</artifactId>
-    <version>2.5.3.router</version>
+    <version>2.5.3.ROUTER-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     <description>The parent project of dubbo</description>
@@ -44,10 +44,16 @@
     </modules>
     <distributionManagement>
         <repository>
-            <id>thirdpart</id>
-            <name>thirdpart</name>
-            <url>http://172.16.201.173:8081/nexus/content/repositories/thirdparty/</url>
+            <id>qingyidai-releases</id>
+            <name>qingyidai-releases</name>
+            <url>http://172.16.201.173:8081/nexus/content/repositories/qingyidai-releases</url>
         </repository>
+
+        <snapshotRepository>
+            <id>qingyidai-snapshots</id>
+            <name>Qingyidai-Snapshots</name>
+            <url>http://172.16.201.173:8081/nexus/content/repositories/qingyidai-snapshots</url>
+        </snapshotRepository>
     </distributionManagement>
     <properties>
         <!-- Common libs -->
